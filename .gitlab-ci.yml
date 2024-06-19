@@ -109,3 +109,22 @@ cmake-test:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
+
+cmake-fuzzy-test:
+  image: greenaddress/wallycore@sha256:f159b338f3d25e13958d79fbd709238e3864de5468b9d743625466a0a681e52b
+  tags:
+    - ga
+  script:
+    - mv _cmake cmake
+    - mv _CMakeLists.txt CMakeLists.txt
+    - mv src/_CMakeLists.txt src/CMakeLists.txt
+    - mv src/ctest/_CMakeLists.txt src/ctest/CMakeLists.txt
+    - cmake -B build-cmake -S .
+      -DCMAKE_C_COMPILER:STRING=clang
+      -DBUILD_SHARED_LIBS:BOOL=FALSE
+      -DCMAKE_BUILD_TYPE:STRING=Debug
+      -DWALLYCORE_ENABLE_TESTS:BOOL=TRUE
+      -DWALLYCORE_ENABLE_FUZZY:BOOL=TRUE
+    - cmake --build build-cmake
+    - cd build-cmake
+    - ctest --output-on-failure -R ".*fuzzer"

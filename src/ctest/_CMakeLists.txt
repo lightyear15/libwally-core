@@ -1,5 +1,3 @@
-
-
 add_executable(test_bech32 test_bech32.c)
 target_include_directories(test_bech32 PRIVATE ${CMAKE_BINARY_DIR})
 target_link_libraries(test_bech32 PRIVATE wallycore)
@@ -34,3 +32,19 @@ add_executable(test_psbt_limits test_psbt_limits.c)
 target_include_directories(test_psbt_limits PRIVATE ${CMAKE_BINARY_DIR})
 target_link_libraries(test_psbt_limits PRIVATE wallycore)
 add_test(test_psbt_limits test_psbt_limits)
+
+if(NOT WALLYCORE_ENABLE_FUZZY)
+    return()
+endif()
+
+set(fuzzy_tests bip32_key_from_base58_n bip32_key_from_seed bip32_key_unserialize wally_tx_from_bytes
+                wally_psbt_from_bytes
+)
+foreach(fuzzy_test IN ITEMS ${fuzzy_tests})
+    add_executable(${fuzzy_test}_fuzzer fuzzy/${fuzzy_test}.c)
+    target_include_directories(${fuzzy_test}_fuzzer PRIVATE ${CMAKE_BINARY_DIR})
+    target_link_libraries(${fuzzy_test}_fuzzer PRIVATE wallycore)
+    target_compile_options(${fuzzy_test}_fuzzer PRIVATE "-fsanitize=fuzzer,address,undefined")
+    target_link_options(${fuzzy_test}_fuzzer PRIVATE "-fsanitize=fuzzer,address,undefined")
+    add_test(NAME ${fuzzy_test}_fuzzer COMMAND ${fuzzy_test}_fuzzer -max_total_time=30)
+endforeach()

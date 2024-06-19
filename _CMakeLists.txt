@@ -9,10 +9,11 @@ project(
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(BUILD_SHARED_LIBS "Build as shared library" OFF)
-option(WALLYCORE_ENABLE_TESTS "Build tests" OFF)
-option(WALLYCORE_INSTALL "Enable install" OFF)
-option(WALLYCORE_COVERAGE "Enable coverage" OFF)
 option(WALLYCORE_BUILD_ELEMENTS "Build elements" ON)
+option(WALLYCORE_ENABLE_TESTS "Build tests" OFF)
+option(WALLYCORE_ENABLE_COVERAGE "Enable code coverage" OFF)
+option(WALLYCORE_ENABLE_FUZZY "build fuzzy test - requires WALLYCORE_ENABLE_TESTS == TRUE" OFF)
+option(WALLYCORE_INSTALL "Enable install" OFF)
 
 include(cmake/utils.cmake)
 generate_config_file()

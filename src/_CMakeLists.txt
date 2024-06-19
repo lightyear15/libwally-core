@@ -16,6 +16,7 @@ file(
     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     "*.[ch]"
 )
+# This file is included by another source file and should not be compiled independently.
 list(REMOVE_ITEM ccan_srcs ccan/ccan/crypto/sha256/sha256_sse4.c)
 message("ccan_srcs: ${ccan_srcs}")
 file(
