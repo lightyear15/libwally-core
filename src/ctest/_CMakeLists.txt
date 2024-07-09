@@ -37,8 +37,10 @@ if(NOT WALLYCORE_ENABLE_FUZZY)
     return()
 endif()
 
-set(fuzzy_tests bip32_key_from_base58_n bip32_key_from_seed bip32_key_unserialize wally_tx_from_bytes
-                wally_psbt_from_bytes
+# uncomment when minimum corpus is available
+set(fuzzy_tests # bip32_key_from_base58_n bip32_key_unserialize
+    wally_tx_from_bytes wally_psbt_from_bytes
+    wally_descriptor_parse
 )
 foreach(fuzzy_test IN ITEMS ${fuzzy_tests})
     add_executable(${fuzzy_test}_fuzzer fuzzy/${fuzzy_test}.c)
@@ -46,5 +48,7 @@ foreach(fuzzy_test IN ITEMS ${fuzzy_tests})
     target_link_libraries(${fuzzy_test}_fuzzer PRIVATE wallycore)
     target_compile_options(${fuzzy_test}_fuzzer PRIVATE "-fsanitize=fuzzer,address,undefined")
     target_link_options(${fuzzy_test}_fuzzer PRIVATE "-fsanitize=fuzzer,address,undefined")
-    add_test(NAME ${fuzzy_test}_fuzzer COMMAND ${fuzzy_test}_fuzzer -max_total_time=30)
+    add_test(NAME ${fuzzy_test}_fuzzer COMMAND ${fuzzy_test}_fuzzer -max_total_time=30 ${CMAKE_CURRENT_BINARY_DIR}
+                                               ${CMAKE_SOURCE_DIR}/fuzz/${fuzzy_test}
+    )
 endforeach()
